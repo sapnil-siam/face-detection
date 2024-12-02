@@ -3,6 +3,13 @@
 import cv2 
 import numpy as np
 
+
+class Tunnel:
+    pass
+
+
+
+
 class FaceFinder:
     """This is going to use haarcascade as filter to detect the largest face"""
 
@@ -15,8 +22,8 @@ class FaceFinder:
 
         # Convert to grayscale
 
-        gray = cv2.cvtColor(frame,cv2.BGR2GRAY)
-        faces = self.face_cascade.deleteMultiScale(gray,minNeighbors = 9)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray,minNeighbors = 9)
 
         # Draw rectangle
 
@@ -24,7 +31,7 @@ class FaceFinder:
             
             return None
 
-        bx, by, bw, bh = 0 
+        bx = by = bw = bh = 0 
 
         for (x, y, w, h) in faces:
 
@@ -32,10 +39,44 @@ class FaceFinder:
 
                 bw, by, bw, bh = x, y, w, h
           
-        cv2.rectangle(img, (bx, by), (bx+bw, by+bh), (0, 255, 255), 3)
+        cv2.rectangle(frame, (bx, by), (bx+bw, by+bh), (0, 255, 255), 3)
 
         return (bx+bw/2),(by+bh/2)
 #--------------------------------------------------------------------
 # main
 ff = FaceFinder()
+# create cam
+cap = cv2.VideoCapture(cv2.CAP_ANY)
+if not cap.isOpened():
+    print("Couldn't open cam")
+    exit()
+
+
+
+
+
+
+
+while True:
+    retval, frame = cap.read()
+    if retval == False:
+        print("camera error!")
+
+    ff.find_face(frame)
+    cv2.imshow('q to quit', frame)
+
+    if cv2.waitKey(30) == ord('q'):
+        break
+
+
+
+
+
+
+pause = input('press enter to end')
+
+# destroy cam
+cap.release()
+
+cv2.destroyAllWindows()
 print('Starting O.O. virtual3D')
